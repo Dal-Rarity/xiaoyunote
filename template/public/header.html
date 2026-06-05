@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>小语手记首页</title>
+		<!-- 初始化样式 -->
+		<link rel="stylesheet" href="css/base.css" />
+		<link rel="stylesheet" href="css/index.css" />
+		<!-- 新增登录注册样式 -->
+		<link rel="stylesheet" href="css/auth.css" />
+	</head>
+	<body>
+		<div class="heard">
+			<div class="heard-left-container fl">
+				<img src="images/手记.png" alt="" />
+				<span class="iconfont">小</span>
+				<span class="iconfont">语</span>
+				<span class="iconfont">手</span>
+				<span class="iconfont">记</span>
+				</div>
+			<div class="heard-container clearfix">
+				<div class="heard-left fl">
+					<span><a href="">关注</a></span>
+					<span><a href="">消息</a></span>
+					<span onclick="toWriteArticlePage('{{session.get('is_login')}}')">创作</span>
+					<span><a href="/personal">我的</a></span>
+					</div>
+				<div class="heard-right fr clearfix">
+					<span>
+						<input type="text" class="searchbox" placeholder="搜索感兴趣的内容或文章"/>
+						<span class="iconfont" onclick="search_article()">&#xe628;</span>
+					</span>
+					<span class="iconfont">&#xe70e;</span>
+					<!-- <span class="iconfont user-trigger" id="userTrigger">&#xe604;</span> -->
+					<span class="login">
+						{% if session.get('is_login') == 'true' %}
+						<a href="">欢迎{{session.get('nickname')}}</a>
+						<a href="/personal"><img src="{{session.get('picture')}}" alt="" /></a>
+						<!-- <a href="">注销</a> -->
+						{% else %}
+						<span class="iconfont user-trigger" id="userTrigger">&#xe6de;</span>
+						{% endif %}
+					</span>
+					<!-- <span id="userNicknameSpan" style="font-size:14px; margin-left:5px;"></span> -->
+				</div>
+		    </div>
+        </div>
+		
+		
+    {%  block content %}
+{%  endblock %}

@@ -1,0 +1,152 @@
+{% extends 'public/header.html' %}
+{% block content %}
+
+		<script type="text/javascript" src="/js/header.js"></script>
+		<script type="text/javascript" src="/js/axios.min.js"></script>
+		<script type="text/javascript" src="/js/index.js"></script>
+
+
+		<div class="article-container clearfix">
+			<div class="left-menu fl">
+				{% for label_name,label_value in label_types.items() %}
+				<div class="{{label_value.selected}}">
+					<a href="?article_type={{label_name}}&page=1">{{label_value.name}}</a>
+					</div>
+				{% endfor %}
+				<!-- <div><a href="">日记</a></div>
+				<div><a href="">周记</a></div>
+				<div><a href="">备忘录</a></div>
+				<div><a href="">阅读笔记</a></div>
+				<div><a href="">影后观感</a></div> -->
+				</div>
+			<div class="article-wapper fl">
+				<div class="article-inner">
+					<!-- 文章数据渲染 -->
+				{% if search_keyword and result|length == 0 %}
+					<div class="no-result">搜索不到您想要的结果</div>
+				{% else %}
+					{% for article,nickname in result %}
+					<div class="article-row clearfix">
+						<div class="article-heard-image fl">
+							<img src="{{article.article_image}}" alt="" />
+						</div>
+						<div class="article-desc fl">
+							<div class="article-name">
+								<a href="/detail?article_id={{article.article_id}}" target="_blank">{{article.title}}</a>
+							</div>
+							<div class="article-info clearfix">
+								<article class="article-left fl">
+									<span>{{article.label_name}}</span>
+									<span class="iconfont">{{article.browse_num}}</span>
+									<span>{{article.article_tag}}</span>
+									<span>{{nickname}}</span>
+								</article>
+								<article class="article-right fr">{{article.create_time}}</article>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+				{% endif %}
+					<div class="load-more">下滑加载更多内容</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- ========== 登录模态框 ========== -->
+				<div id="loginModal" class="modal-overlay" style="display:none;">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h1 class="modal-title">用户登录</h1>
+								<button class="btn-close" onclick="closeModal('loginModal')">×</button>
+							</div>
+							<div class="modal-body">
+								<form id="loginForm">
+									<div class="mb-3">
+										<input type="email" id="username" placeholder="请输入邮箱" required>
+									</div>
+									<div class="mb-3">
+										<input type="password" id="password" placeholder="请输入密码" required>
+									</div>
+									<div class="mb-3">
+										<div style="display: flex; gap: 10px; align-items: center;">
+											<img src="/vcode" alt="验证码" id="captchaImg" onclick="refreshCaptcha()">
+											<input type="text" id="loginCode" class="auth-code" placeholder="验证码" style="flex:1;">
+										</div>
+									</div>
+									<button type="submit" class="login-button" onclick="doLogin()">登录</button>
+								</form>
+							</div>
+							<div class="modal-footer">
+								<span class="register" onclick="switchModal('loginModal','regModal')">注册账号</span>
+							</div>
+						</div>
+					</div>
+				</div>
+		
+				<!-- ========== 注册模态框 ========== -->
+				<div id="regModal" class="modal-overlay" style="display:none;">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h1 class="modal-title">用户注册</h1>
+								<button class="btn-close" onclick="closeModal('regModal')">×</button>
+							</div>
+							<div class="modal-body">
+								<form id="regForm">
+									<div class="mb-3">
+										<input type="email" id="regEmail" placeholder="请输入邮箱" required>
+									</div>
+									<div class="mb-3">
+										<input type="password" id="regPassword" placeholder="请输入密码" required>
+									</div>
+									<div class="mb-3">
+										<input type="password" id="regConfirmPwd" placeholder="请再次输入密码" required>
+									</div>
+									<div class="mb-3">
+										<div style="display: flex; gap: 10px;">
+											<input type="text" id="emailCode" class="auth-code" placeholder="请输入验证码" style="flex:1;">
+											<button type="button" class="send" id="sendCodeBtn" onclick="sendEmailVCode()">发送</button>
+										</div>
+									</div>
+									<button type="submit" class="login-button" onclick="userReg()">注册</button>
+								</form>
+							</div>
+							<div class="modal-footer">
+								<span class="register" onclick="switchModal('regModal','loginModal')">已有账号？去登录</span>
+							</div>
+						</div>
+					</div>
+				</div>
+		
+				<!-- ========== 个人中心面板 ========== -->
+				<div id="profilePanel" class="profile-panel" style="display:none;">
+					<div class="profile-avatar">
+						<img id="profileAvatar" src="images/头像.png" alt="头像" onclick="document.getElementById('avatarUpload').click();">
+						<input type="file" id="avatarUpload" accept="image/*" style="display:none;">
+					</div>
+					<div class="profile-nickname">
+						<input type="text" id="profileNickname" placeholder="昵称">
+					</div>
+					<div class="profile-actions">
+						<button id="saveProfileBtn">保存修改</button>
+						<button id="logoutBtn">退出登录</button>
+					</div>
+				</div>
+		
+				<script src="/js/auth.js"></script>
+		
+	</body>
+	<script>
+		window.startNum = {{start_num}};
+		window.endNum = {{end_num}};
+	</script>
+	
+	
+	<script>
+		if(location.search.includes("scroll")){
+			window.scrollTo(0,document.body.scrollHeight-1000);
+		}
+	</script>
+</html>
+{% endblock %}
