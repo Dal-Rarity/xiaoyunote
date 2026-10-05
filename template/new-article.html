@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>文章发布</title>
+		<link rel="stylesheet" href="/css/base.css" />
+		<link rel="stylesheet" href="/css/new-article.css" />
+		<link rel="stylesheet" href="/css/auth.css" />
+		<script type="text/javascript" src="/plugins/ueditor-plus/ueditor.config.js"></script>
+		<script type="text/javascript" src="/plugins/ueditor-plus/ueditor.all.js"></script>
+		<script type="text/javascript" src="/plugins/ueditor-plus/lang/zh-cn/zh-cn.js"></script>
+		<script type="text/javascript" src="/js/new-article.js"></script>
+		<script type="text/javascript" src="/js/auth.js"></script>
+		<script type="text/javascript" src="/js/axios.min.js"></script>
+		<!-- <script type="text/javascript" src="/js/index.js"></script> -->
+		
+		<script>
+
+		</script>
+	</head>
+	<body>
+		<div class="header">
+			<div class="left">
+				<span class="iconfont" onclick="showDraftedList()">&#xe895;草稿箱
+					<div class="drafted-num">{{drafted_count}}</div>
+				</span>
+				<div class="drafted-info" style="display: none;">
+					<div class="iconfont">&#xeb6d;</div>
+					<div class="drafted-list">
+						<i>草稿箱</i>
+						{% for drafted in all_drafted %}
+						<div class="clearfix" onclick="toDrafted({{drafted.article_id}})">
+							<div class="drafted-icon fl">
+								<i class="iconfont">&#xe618;</i>
+							</div>
+							<div class="drafted-create fl">
+								<div class="drafted-name">{{drafted.title}}</div>
+								<div class="drafted-update-time">{{drafted.create_time}}</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+				
+			</div>
+			<div class="mid"><span>UEditor</span></div>
+			<div class="right">
+				<span class="publish" onclick="openModal('publishModal')">发表</span>
+				<!-- <span class="publish" onclick="createAticle(0)">发表</span> -->
+			</div>
+		</div>
+		<div class="main">
+			<div class="article-header">
+				<input type="text" placeholder="请输入文章标题" />
+			</div>
+			<div class="ue">
+				<script id="editor" type="text/plain" style="height:300px;">
+				</script>
+			</div>
+		</div>
+
+
+		<!-- ========== 发表文章模态框 ========== -->
+		<div id="publishModal" class="modal-overlay" style="display:none;">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title">发表文章</h1>
+						<button class="btn-close" onclick="closeModal('publishModal')">×</button>
+					</div>
+					<div class="modal-body clearfix">
+						<!-- 左侧框架设计 -->
+						<div class="publish-left fl">
+							<div class="upload-header-image">
+								<label for="xfile">
+									<img src="/images/image-upload.png" alt="" />
+								</label>
+							</div>
+							<div class="upload-header-button">
+								<label for="xfile">本地上传</label>
+								<form ><input type="file" id="xfile" accept="image/*" style="display:none;" /></form>
+							</div>
+							<div class="random-header" onclick="randomHeaderImage()">随机封面</div>
+							<div class="upload-desc">请上传200*200px，小于等于80KB的PNG/JPG/GIF图片</div>
+							
+						</div>
+						<!-- 右侧框架设计 -->
+						<div class="publish-right fl">
+							<div class="article-cloumns clearfix">
+								<div class="article-columns-left fl">
+									<div class="article-label-name">投递栏目</div>
+									<div class="article-label-value" onclick="showArticleLabelList()">
+										<span>请选择需要投递的栏目</span>
+										<span class="iconfont">&#xe60c;</span>
+										<div class="article-label-list">
+											<div>
+												{% for label_name,label_value in label_types.items() %}
+												<li data-label-type="{{label_name}}" class="{{label_value.selected}}" onclick="selectLabelName('{{label_name}}','{{label_value.name}}')">{{label_value.name}}</li>
+												{% endfor %}
+									<!-- 			<li class="article-label-selected">请选择需要投递的栏目</li>
+												<li>日记</li>
+												<li>周记</li>
+												<li>备忘录</li>
+												<li>阅读笔记</li>
+												<li>影后观感</li> -->
+											</div>
+										</div>
+									</div>
+								</div>
+								<!--  -->
+								<div class="article-columns-right fl">
+									<div class="article-type-name">文章类型</div>
+									<div class="article-type-value" onclick="showArticleTypeList()">
+										<span>请选择</span>
+										<span class="iconfont">&#xe60c;</span>
+										<div class="article-type-list">
+											<div>
+												{% for article_type_name,article_type_value in article_types.items() %}
+												<li data-article-type="{{article_type_name}}" class="{{article_type_value.selected}}" onclick="selectArticleType('{{article_type_name}}','{{article_type_value.name}}')">{{article_type_value.name}}</li>
+												{% endfor %}
+												<!-- <li class="article-type-selected">请选择</li>
+												<li>首发</li>
+												<li>原创</li>
+												<li>其他</li> -->
+											</div>
+										</div>
+										
+									</div>
+								</div>
+							</div>
+							<div class="article-tags">
+								<div class="article-tag-name">
+									<span>文章标签</span>
+									<span>
+										<span class="tag-num">0</span>
+										<span>/</span>
+										<span>3</span>
+									</span>
+									<!-- <span>0/3</span> -->
+								</div>
+								<div class="article-tag-value clearfix">
+									<div class="change-tags fl">
+										<!-- <span>心情</span>
+										<span>灵感</span> -->
+									</div>
+									<input class="fl" type="text" placeholder="选择下列标签"/>
+								</div>
+								<script>
+									window.globalArticleTags = {{article_tags | safe}}
+								</script>
+								<div class="article-tag-list">
+									{% for article_tag in article_tags %}
+										<span onclick="addTag('{{article_tag}}')">{{article_tag}}</span>
+									{% endfor %}
+									<!-- <span>灵感</span>
+									<span>心情</span>
+									<span>随笔</span>
+									<span>感悟</span>
+									<span>观点</span>
+									<span>天气</span> -->
+								</div>
+							</div>
+							<button class="saveAndCancleButton" onclick="createAticle(0)">保存为草稿</button>
+							<button class="publishButton" onclick="createAticle(1)">确认发布</button>
+							
+						</div>
+					</div>
+					<!-- <div class="modal-footer">
+						 <button type="button" class="login-button" onclick="submitArticle()">发布</button>
+					</div> -->
+				</div>
+			</div>
+		</div>
+
+	</body>
+</html>

@@ -1,3 +1,9 @@
+"""评论模型：映射 comment 表（类名为 Feedback）。
+
+两级评论结构：一级评论 replay_id=0 且 base_replay_id=0 并占楼层号；
+二级回复通过 base_replay_id 挂在所属一级评论下，replay_id 指向被回复的评论。
+get_feedback_user_list() 组装「一级评论 + 回复列表（含回复人/被回复人信息）」。
+"""
 # 评论的具体实现
 
 from app.config.config import config

@@ -1,3 +1,6 @@
+"""文章蓝图：文章详情页、写文章页、草稿保存/读取、文章发布、
+头图本地上传与随机默认头图。写文章相关路由通过 before_request 做登录拦截。
+"""
 import json
 import logging
 import random
@@ -40,22 +43,21 @@ def article_detail():
     article = Article()
     # 获取文章的所有信息
     article_content = article.get_article_detail(article_id)
-    article_tag_string = article_content.article_tag
-    article_tag_list = article_tag_string.split(",")
-    # 2. 检查文章是否存在
+    # 2. 检查文章是否存在（必须在访问字段之前判空）
     if article_content is None:
         abort(404, description="文章不存在")
+    article_tag_string = article_content.article_tag
+    article_tag_list = article_tag_string.split(",") if article_tag_string else []
     # 获取文章作者信息
     user = User()
     user_info = user.find_by_userid(article_content.user_id)
 
     feedback_data_list = Feedback().get_feedback_user_list(article_id)
 
-    #收藏功能的实现
+    #收藏功能的实现（模板语义：1=未收藏，0=已收藏）
     is_collection = 1
     if session.get("is_login") == "true":
         user_id = session.get("user_id")
-        # is_collection = collection().user_if_collection(user_id,article_id)
         # 直接查询数据库
         result = db_session.query(Collection.canceled).filter_by(
             user_id=user_id,
@@ -63,21 +65,20 @@ def article_detail():
         ).first()
         # 存在记录且 canceled == 0 表示已收藏
         if result and result[0] == 0:
-            is_collection = 1
+            is_collection = 0
 
-    # 喜欢功能的实现
+    # 喜欢功能的实现（模板语义：1=未喜欢/灰色，0=已喜欢/红色）
     is_favorite = 1
     if session.get("is_login") == "true":
         user_id = session.get("user_id")
-        # is_favorite = Favorite().user_if_favorite(user_id,article_id)
         # 直接查询数据库
         result = db_session.query(Favorite.canceled).filter_by(
             user_id=user_id,
             article_id=article_content.article_id
         ).first()
-        # 存在记录且 canceled == 0 表示已收藏
+        # 存在记录且 canceled == 0 表示已喜欢
         if result and result[0] == 0:
-            is_favorite = 1
+            is_favorite = 0
 
     # 查看评论数量
     feedback_count = Feedback().get_article_feedback_count(article_id)
@@ -145,7 +146,7 @@ def article_save():
     if article_id == -1:
         # 新文章：草稿(drafted=0) 或 直接发布(drafted=1)
         if title == "":
-            return response_message.ArticleMessege.other("请输入文章标题")
+            return response_message.ArticleMessage.other("请输入文章标题")
         # 获取当前用户
         if 'user_id' not in session:
             return response_message.ArticleMessage.error("请先登录")
@@ -168,7 +169,7 @@ def article_save():
         # 更新已有文章
         user, title, article_content = get_article_request_param(request_data)
         if title == "":
-            return response_message.ArticleMessege.other("请输入文章标题")
+            return response_message.ArticleMessage.other("请输入文章标题")
         article_id = Article().update_article(
             article_id=article_id,
             title=title,

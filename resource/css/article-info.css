@@ -1,0 +1,449 @@
+.article_main {
+	background-color: #f8fafc;
+	/* border: 1px solid red; */
+}
+.article-container {
+	/* border: 1px solid green; */
+	width: 1000px;
+	margin: 0 auto;
+	height: 60px;
+	line-height: 60px;
+}
+/* 导航栏样式 */
+.article-path {
+	font-size: 14px;
+	/* border: 1px solid blue; */
+}
+.article-container-main {
+	width: 1000px;
+	margin: 0 auto;
+	/* border: 1px solid blue; */
+}
+/* 文章容器左侧格式设置 */
+.article-container-main .left {
+	display: inline-block;
+	width: 700px;
+	border-radius: 10px;
+	background-color: #fff;
+	padding-left: 40px;
+	padding-right: 40px;
+}
+/* 文章容器右侧格式设置 */
+.article-container-main .right {
+	display: inline-block;
+	width: 260px;
+	margin-left: 25px;
+	
+}
+
+.article-title {
+	margin-top: 50px;
+	font-size: 32px;
+	font-weight: 700;
+}
+
+/* 标签 */
+.note-article-info {
+	margin-top: 25px;
+}
+.note-left {
+	
+}
+/* 标签两字样式设计 */
+.note-left .tag-name {
+	height: 30px;
+	line-height: 30px;
+	color: #9199a1;
+	font-size: 12px;
+}
+/* 标签类型样式设计 */
+.note-left .tag-value {
+	color: #6699ff;
+	background-color: #f5f8ff;
+	border: 1px solid #e9f0ff;
+	font-size: 12px;
+	border-radius: 15px;
+	padding: 10px 5px;
+}
+/* 喜欢样式设计 */
+.note-like.fr {
+	width: 60px;
+	height: 40px;
+	line-height: 40px;
+    cursor: pointer;
+    /* margin-left: 10px; */
+}
+.note-like.fr span {
+	font-size: 30px;
+}
+
+
+/* 收藏样式设计 */
+.note-right {
+	width: 60px;
+	height: 40px;
+	line-height: 40px;
+	background-color: #3377ff;
+	color: #fff;
+	text-align: center;
+	margin-right: 40px;
+	border-radius: 20px;
+	font-size: 12px;
+}
+.note-right:hover {
+	cursor: pointer;
+}
+
+/* 文章详细内容设置 */
+.article-content-wrap {
+	margin-top: 55px;
+}
+
+.article-content-wrap img {
+	width: 100%;
+}
+
+/* 右侧顶部边框背景设置 */
+.article-container-main .right .top {
+	background-color: #fff;
+	border-radius: 10px;
+}
+
+/* 右侧头像设置 */
+.author-image img {
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+	margin: 20px;
+}
+/* 右侧作者信息 */
+.author-info {
+	margin-top: 20px;
+	background-color: #fff;
+}
+.author-info .author-name {
+	font-weight: 700;
+}
+.author-info .author-age {
+	margin-top: 15px;
+	color: #5c5463;
+	font-size: 12px;
+}
+/* 右侧底部边框背景设置 */
+.article-container-main .right .bottom {
+	margin-top: 25px;
+	background-color: #fff;
+	border-radius: 10px;
+}
+/* 相关文章的样式 */
+.about-article {
+	display: inline-block;
+	margin: 25px;
+	font-weight: 700;
+}
+
+
+/* 相关文章推荐的字体图标设计 */
+@font-face {
+  font-family: 'iconfont';
+  src: url('/font/iconfont.woff2?t=1779623007187') format('woff2'),
+       url('/font/iconfont.woff?t=1779623007187') format('woff'),
+       url('/font/iconfont.ttf?t=1779623007187') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.about-article-info {
+	margin-left: 25px;
+}
+.about-article-info div:nth-child(n+2) {
+	border-top: 1px solid #e9eaeb;
+}
+.article-info-row {
+	padding-top: 15px;
+	margin-bottom: 15px;
+}
+.article-info-row a {
+	color: #545c63;
+	font-size: 14px;
+}
+.article-info-row a:hover {
+	color: #3377ff;
+}
+
+/* 文章详情下边的创建时间以及浏览人数 */
+.article-create-time {
+	margin-top: 40px;
+	font-size: 14px;
+}
+.praise {
+	margin: 30px auto;
+	height: 75px;
+	width: 75px;
+	border-radius: 50%;
+	background: rgba(255,170,0,.1);
+	line-height: 75px;
+	text-align: center;
+}
+.praise:hover {
+	background-color: #ffaa00;
+}
+.praise span {
+	font-size: 45px;
+	color: #ffaa00;
+}
+.praise span:hover {
+	color: #fff;
+	cursor: pointer;
+}
+
+/* 评论区的样式 */
+.feedback-num {
+	width: 1000px;
+	margin: 0 auto;
+	margin-top: 30px;
+	font-weight: 700;
+}
+.article-feedback {
+	width: 1000px;
+	margin: 0 auto;
+}
+.feedback-wrap {
+	display: inline-block;
+	width: 700px;
+	background-color: #fff;
+	border-radius: 10px;
+	margin-top: 25px;
+	padding-left: 30px;
+	padding-top: 30px;
+}
+
+.comment-trigger {
+	cursor: text;
+}
+
+.useless-right{
+	display: inline-block;
+	width: 260px;
+	margin-left: 25px;
+	
+}
+
+.write-feedback-wrap > div {
+	display: inline-block;
+	height: 50px;
+	line-height: 50px;
+	font-weight: 700;
+}
+.write-feedback-wrap > span {
+	display: inline-block;
+	height: 50px;
+	line-height: 50px;
+	width: 530px;
+	background-color: #f3f5f6;
+	color: #9e99a1;
+	border-radius: 10px;
+	margin-left: 30px;
+	padding-left: 15px;
+}
+/* 一级评论的样式设置 */
+/* 评论区头像设置 */
+.feedback-author>a>img {
+	display: block;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	opacity: 0.8;
+}
+.feedback-author>a>img:hover {
+	opacity: 1;
+}
+.feedback-author>a>span {
+	display: block;
+	width: 50px;
+	text-align:center;
+	color: #b7bbbf;
+	font-style: 12px;
+}
+/* 评论者昵称以及评论内容设置 */
+.feedback-content {
+	margin-left: 20px;
+	width: 80%;
+}
+.feedback-content>a {
+	display:block;
+	font-size: 14px;
+}
+.feedback-content>span {
+	display: block;
+	margin: 15px 0px;
+}
+.feedback-detail{
+	margin-top: 20px;
+	padding-top: 30px;
+	border-top: 1px solid #ebebec;
+	width: 640px;
+}
+/* 点赞、回复、时间的样式设置 */
+/* .feedback-content-footer {
+	width: 700px;
+} */
+/* 点赞 */
+.feedback-content-footer>span {
+	display: inline-block;
+	width: 50px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	font-size: 20px;
+	background-color: #ededee;
+	border-radius: 15px;
+}
+/* 回复 */
+.replay-button {
+	display: inline-block;
+	color: #9199a1;
+	font-size: 12px;
+	margin-left: 25px;
+	height: 30px;
+	line-height: 30px;
+}
+/* 发布时间 */
+.publish-time{
+	display: inline-block;
+	color: #9199a1;
+	font-size: 12px;
+	height: 30px;
+	line-height: 30px;
+}
+
+/* 二级评论的样式设置 */
+.replay-box {
+	margin-left: 70px;
+	margin-top: 30px;
+}
+.feedback-replay-content {
+	margin-left: 15px;
+}
+.feedback-replay-content>a {
+	color: #07111b;
+	font-size: 14px;
+	font-weight: 700;
+}
+.feedback-replay-content>p {
+	font-size: 14px;
+}
+.replay-text {
+	color: #939994;
+	font-size: 14px;
+}
+.replay2-button {
+	display: inline-block;
+	color: #9199a1;
+	font-size: 12px;
+	height: 30px;
+	line-height: 30px;
+}
+.feedback-replay-content {
+	width: 75%;
+}
+
+/* 没有评论数据的样式 */
+.no-data {
+	margin: 0 auto;
+	margin-top: 30px;
+}
+.no-data-line {
+	height: 65px;
+	width: 660px;
+	text-align: center;
+	border-top:1px solid #ebebec;
+	padding-top: 10px;
+}
+.no-data-line>span {
+}
+/* 发布评论的模态框样式设计 */
+.feedback-modal-wrap .modal-content {
+	width: 640px;
+	max-width: 120%;
+	margin: 0 auto;
+}
+/* .feedback-modal-wrap .modal-dialog {
+	margin-top: 200px;
+} */
+/* 提交按钮 - 蓝色样式 */
+#submitCommentBtn {
+    background-color: #007bff;
+    border: 1px solid #007bff;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+/* 强制评论模态框居中 */
+#feedbackModel.modal-overlay {
+    justify-content: center;
+    align-items: center;
+}
+
+/* 回复评论的评论框样式 */
+.write-author-feedback {
+	margin-top: 30px;
+}
+
+.write-author-feedback img {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+}
+.write-author-feedback textarea {
+	border: 1px solid #d9dde1;
+	width: 450px;
+	height: 80px;
+	border-radius: 5px;
+	/* 对齐方式 */
+	vertical-align: top;
+	margin-left: 30px;
+	padding-top: 10px;
+	padding-left: 15px;
+	/* 禁止拖拽 */
+	resize: none;
+}
+.write-author-feedback textarea:focus {
+	outline: none;
+	border: 1px solid #d9dde1;
+}
+/* 取消和回复的样式设计 */
+.author-feedback-button {
+	width: 520px;
+	/* 向右对齐 */
+	text-align: right;
+	margin-top: 10px;
+}
+.author-feedback-button button {
+	width: 60px;
+	height: 35px;
+	border-radius: 30px;
+}
+.cancel-author-feedback {
+	border: 1px solid #93999f;
+	background-color: #fff;
+	color: #93999f;
+}
+.cancel-author-feedback:hover {
+	border: 1px solid #a6abb0;
+	background-color: #fff;
+	color: #4d555d;
+}
+.confirm-author-feedback {
+	background-color: #3377ff;
+	border: 1px solid #3377ff;
+	color: #fff;
+}

@@ -1,0 +1,65 @@
+{% extends 'public/header.html' %}
+{% block content %}
+<link rel="stylesheet" href="/css/follow.css"/>
+<script type="text/javascript" src="/js/axios.min.js"></script>
+<script type="text/javascript" src="/js/header.js"></script>
+<script type="text/javascript" src="/js/follow.js"></script>
+        <div class="person-center-header">
+			<div class="user-info clearfix">
+				<div class="user-picture fl">
+					<img src="{{user.picture}}" alt="" />
+				</div>
+				<div class="personal-name fl">{{user.nickname}}</div>
+			</div>
+		</div>
+		<div class="personal-main">
+			<div class="menu clearfix">
+				<div class="{{ 'active fl' if active == 'followers' else 'every-menu fl' }}">
+					<li><a href="/follow?type=followers">谁关注了我({{follower_count}})</a></li>
+				</div>
+				<div class="{{ 'active fl' if active == 'following' else 'every-menu fl' }}">
+					<li><a href="/follow?type=following">我关注了谁({{following_count}})</a></li>
+				</div>
+			</div>
+
+			<div class="personal-content">
+				{% if user_list == [] %}
+				<div class="item-list">
+					<p class="no-item">
+						{% if type_name == 'followers' %}
+						还没有人关注你，快去<a href="/">发表文章</a>吸引粉丝吧
+						{% elif type_name == 'following' %}
+						你还没有关注任何人，快去<a href="/">发现好内容</a>吧
+						{% endif %}
+					</p>
+				</div>
+				{% else %}
+				<div class="item-list">
+					{% for u in user_list %}
+					<div class="follow-item clearfix">
+						<div class="follow-avatar fl">
+							<a href="/user/{{u.user_id}}">
+								<img src="{{u.picture}}" alt="" />
+							</a>
+						</div>
+						<div class="follow-info fl">
+							<div class="follow-name">
+								<a href="/user/{{u.user_id}}">{{u.nickname}}</a>
+							</div>
+						</div>
+						<div class="follow-action fr">
+							{% if type_name == 'following' %}
+							<button class="follow-btn followed" onclick="toggleFollow({{u.user_id}})">已关注</button>
+							{% else %}
+							<button class="follow-btn" onclick="toggleFollow({{u.user_id}})">+ 关注</button>
+							{% endif %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+				{% endif %}
+			</div>
+		</div>
+    </body>
+</html>
+{% endblock %}

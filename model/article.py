@@ -1,3 +1,9 @@
+"""文章模型：映射 article 表。
+
+包含首页分页/栏目/搜索查询、详情与浏览量、草稿与发布、头图更新，
+以及「我发布的 / 我收藏的 / 我评论过的」文章聚合查询。
+drafted 字段约定：1=已发布，0=草稿。
+"""
 from app.config.config import config
 from app.settings import env
 from common.database import db_connect
@@ -60,6 +66,8 @@ class Article(Base):
     # 获取文章详情
     def get_article_detail(self,article_id):
         result = db_session.query(Article).filter_by(article_id=article_id).first()
+        if result is None:
+            return None
         result.browse_num = result.browse_num + 1
         db_session.commit()
         return db_session.query(Article).filter_by(article_id=article_id).first()
@@ -157,7 +165,10 @@ class Article(Base):
     #添加文章中所有头部图片的路径
     def app_path(self,article_list):
         for article in article_list:
-            article.article_image = config[env].article_header_image_path + article.article_image
+            # 脱离会话再改展示字段，避免路径字符串被 flush 回数据库造成数据污染
+            db_session.expunge(article)
+            # 发文章时未上传头图则 article_image 为 NULL，回退到默认头图
+            article.article_image = config[env].article_header_image_path + (article.article_image or "1.jpg")
         return article_list
 
 

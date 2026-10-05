@@ -1,0 +1,416 @@
+.header>div {
+	display: inline-block;
+	width: 33%;
+	/* border: 1px solid red; */
+}
+.main {
+	background-color: #fff;
+	width: 800px;
+	margin: 25px auto;
+	border-radius: 10px;
+}
+.header {
+	margin: 40px 20px;
+}
+.header span {
+	display: inline-block;
+	height: 38px;
+	line-height: 38px;
+	text-align: center;
+	border-radius: 19px;
+}
+.left span {
+	width: 110px;
+	background-color: #e2e4e6;
+	font-size: 14px;
+	color: #545c63;
+}
+.mid span {
+	margin-left: 40%;
+	width: 85px;
+	background-color: #9199a1;
+	font-size: 12px;
+	color: #fff;
+}
+.right {
+	text-align: right;
+}
+.right span {
+	width: 90px;
+	background-color: #3377ff;
+	font-size: 14px;
+	color: #fff;
+}
+
+.main >div {
+	margin-left: 30px;
+}
+.article-header input {
+	height: 70px;
+	width: 740px;
+	font-size: 20px;
+	font-weight: 700;
+}
+
+/* 发表模态框设置 */
+.publish:hover {
+	cursor: pointer;
+}
+.modal-content {
+	width: 570px;
+	height: 400px;
+	margin-left: -80px !important;
+}
+.modal-body {
+	height: 330px;
+}
+/* 左侧样式设计 */
+.publish-left {
+	width: 170px;
+	height: 100%;
+	/* background-color: red; */
+}
+.upload-header-image {
+	width: 100px;
+	height: 100px;
+	line-height: 100px;
+	text-align: center;
+	background-color: #f8fafc;
+	border-radius: 10px;
+	margin-left: 20px;
+	/* margin-top: 20px; */
+}
+
+.upload-header-image img {
+	width: 40px;
+	height: 40px;
+}
+.upload-header-image img:hover {
+	cursor: pointer;
+}
+.upload-header-button {
+	margin-top: 15px;
+	margin-left: 20px;
+	width: 100px;
+	height: 25px;
+	line-height: 25px;
+	font-size: 12px;
+	text-align: center;
+	border-radius: 12px;
+	background-color: #383B42;
+	color: #CECFD2;
+}
+.upload-header-button:hover {
+	cursor: pointer;
+}
+.random-header {
+	margin-top: 15px;
+	margin-left: 20px;
+	width: 100px;
+	height: 25px;
+	line-height: 25px;
+	font-size: 12px;
+	text-align: center;
+	border-radius: 12px;
+	background-color: #ededee;
+	color: #60676e;
+}
+.random-header:hover {
+	cursor: pointer;
+}
+.upload-desc {
+	margin-top: 15px;
+	margin-left: 20px;
+	width: 100px;
+	font-size: 12px;
+	color: #9199a1;
+}
+
+/* 右侧样式设计 */
+.publish-right {
+	width: 350px;
+	height: 100%;
+	/* background-color: blue; */
+}
+
+/* 投递栏目标签样式设计 */
+.article-label-name {
+	font-size: 14px;
+	font-weight: 700;
+}
+.article-label-value {
+	position: relative;
+	width: 200px;
+	height: 40px;
+	line-height: 40px;
+	border-radius:10px;
+	border: 1px solid #9199a1;
+	font-size: 14px;
+	padding-left: 15px;
+	margin-top: 10px;
+
+}
+.article-label-list {
+	position: absolute;
+	background-color: #fff;
+	width: 100%;
+	border: 1px solid #f3f5f6;
+	border-radius: 10px;
+	margin-left: -15px;
+}
+.article-label-list div {
+	font-size: 14px;
+}
+.article-label-list div li{
+	padding-left: 14px;
+}
+.article-label-value>span:first-child {
+	display: inline-block;
+	width: 140px;
+}
+
+/* .article-label-selected { */
+.selected {
+	background-color: #f3f5f6;
+}
+.article-type-value>span:first-child {
+	display: inline-block;
+	width: 45px;
+}
+/* 下拉箭头设置 */
+.article-label-value .iconfont {
+	margin-left: 20px;
+	color: #9199a1;
+	font-size: 14px;
+}
+/* 文章类型设置 */
+.article-type-name {
+	font-size: 14px;
+	font-weight: 700;
+	margin-left: 25px;
+}
+.article-type-value {
+	position: relative;
+	background-color: #fff;
+	width: 130px;
+	height: 40px;
+	line-height: 40px;
+	border: 1px solid #9199a1;
+	border-radius: 10px;
+	margin-left: 15px;
+	margin-top: 10px;
+	font-size: 14px;
+	padding-left: 15px;
+}
+.article-type-list {
+	position: absolute;
+	background-color: #fff;
+	width: 100%;
+	border: 1px solid #f3f5f6;
+	border-radius: 10px;
+	margin-left: -15px;
+}
+.article-type-value .iconfont {
+	margin-left: 46px;
+	color: #9199a1;
+	font-size: 14px
+}
+.article-type-selected {
+	background-color: #f3f5f6;
+}
+.article-type-list div li{
+	padding-left: 14px;
+}
+/* 文章标签的样式 */
+.article-tags {
+	margin-top: 10px;
+}
+/* .article-tag-name span:nth-child(1){ */
+.article-tag-name>span:nth-child(1){
+	font-weight: 700;
+	font-size: 14px;
+}
+/* .article-tag-name span:nth-child(2) { */
+.article-tag-name>span:nth-child(2) {
+	font-size: 12px;
+	color: #93999f;
+	margin-left: 10px;
+}
+/* 选择标签样式 */
+/* .article-tag-value {
+	width: 345px;
+	height: 35px;
+	line-height: 35px;
+	margin-top: 10px;
+	border: 1px solid #9199a1;
+	border-radius: 10px;
+	padding-left: 15px;
+} */
+.article-tag-value::placeholder {
+	color: #93999f;
+	font-size: 14px;
+}
+.article-tag-list {
+	margin-top: 10px;
+	height: 100px;
+}
+.article-tag-list span {
+	display: inline-block;
+	height: 25px;
+	line-height: 25px;
+	text-align: center;
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: #eeeeef;
+	color: #545c63;
+	font-size: 12px;
+	border-radius: 12px;
+	margin-left: 5px;
+}
+/* 两个按钮的样式 */
+.saveAndCancleButton {
+	margin-left: 130px;
+	width: 90px;
+	height: 35px;
+	line-height: 35px;
+	text-align: center;
+	border: 1px solid #ededee;
+	background-color: #ededee;
+	color: #9ca0a4;
+	font-size: 14px;
+	border-radius: 17px;
+}
+.publishButton {
+	height: 35px;
+	line-height: 35px;
+	width: 100px;
+	margin-left: 15px;
+	font-size: 14px;
+	background-color: #3377ff;
+	border: 1px solid #3377ff;
+	color: #fff;
+	border-radius: 17px;
+}
+
+/* 草稿箱样式设计 */
+.header .left > span {
+	position: relative;
+}
+.header .left > span:hover {
+	cursor: pointer;
+}
+.drafted-num {
+	display: inline-block;
+	position: absolute;
+	right: 0;
+	width: 17px;
+	height: 17px;
+	line-height: 17px;
+	text-align: center;
+	background-color: #f20d0d;
+	color: #fff;
+	font-size: 12px;
+	border-radius: 50%;
+}
+/* 草稿列表的样式 */
+.heard .left {
+	position: relative;
+}
+.drafted-info {
+	position: absolute;
+}
+.drafted-info .drafted-list {
+	background-color: #fff;
+	width: 320px;
+	/* height: 365px; */
+	border-radius: 10px;
+	margin-top: -12px;
+	padding-left: 20px;
+}
+.drafted-info>div:first-child {
+	font-size: 40px;
+	color: #fff;
+	margin-left: 20px;
+	margin-top: -10px;
+}
+.drafted-list>i {
+	display: inline-block;
+	font-style: normal;
+	font-weight: 700;
+	font-size: 14px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+.drafted-list>div {
+	width: 280px;
+	height: 60px;
+	line-height: 60px;
+	border-radius: 10px;
+	margin-bottom: 10px;
+	background-color: #f3f5f6;
+}
+.drafted-list>div:hover {
+	background-color: #e5eeff;
+	cursor: pointer;
+}
+.drafted-icon i {
+	font-size: 25px;
+	height: 60px;
+	line-height: 60px;
+	margin-left: 10px;
+}
+.drafted-create {
+	margin-left: 10px;
+}
+.drafted-create .drafted-name {
+	color: #545c63;
+	line-height: 20px;
+	font-size: 14px;
+	margin-top: 10px;
+	font-weight: 700;
+}
+.drafted-create .drafted-name:hover {
+	color: #0055ff;
+}
+.drafted-create .drafted-update-time {
+	font-size: 12px;
+	color: #9199a1;
+	line-height: 20px;
+}
+
+/* 文章标签的选择 */
+.article-tag-value {
+	width: 345px;
+	height: 35px;
+	line-height: 30px;
+	margin-top: 10px;
+	border: 1px solid #9199a1;
+	border-radius: 10px;
+	padding-left: 15px;
+}
+.article-tag-value>input {
+	height: 30px;
+}
+.change-tags {
+	margin-right: 10px;
+}
+.change-tags>span {
+	/* height: 25px;
+	line-height: 25px; */
+	padding: 5px 10px;
+	background-color: #eeeeef;
+	border-radius: 13px;
+	font-size: 12px;
+	color: #545c63;
+	margin-left: 5px;
+	cursor: pointer;
+}
+/* 草稿名字溢出样式 */
+.drafted-name {
+	/* 文本不换行 */
+	white-space: nowrap;
+	/* 溢出隐藏 */
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 220px;
+}

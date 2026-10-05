@@ -1,0 +1,69 @@
+{% extends 'public/header.html' %}
+{% block content %}
+<link rel="stylesheet" href="/css/user_home.css"/>
+<script type="text/javascript" src="/js/axios.min.js"></script>
+<script type="text/javascript" src="/js/header.js"></script>
+<script type="text/javascript" src="/js/follow.js"></script>
+        <div class="person-center-header">
+			<div class="user-info clearfix">
+				<div class="user-picture fl">
+					<img src="{{user.picture}}" alt="" />
+				</div>
+				<div class="personal-name fl">
+					{{user.nickname}}
+					<span class="follow-stats">粉丝{{follower_count}} 关注{{following_count}}</span>
+				</div>
+				{% if not is_self %}
+				<div class="user-home-action fr">
+					{% if is_following %}
+					<button class="follow-btn followed" onclick="toggleFollow({{user.user_id}})">已关注</button>
+					{% else %}
+					<button class="follow-btn" onclick="toggleFollow({{user.user_id}})">+ 关注</button>
+					{% endif %}
+				</div>
+				{% endif %}
+			</div>
+		</div>
+		<div class="personal-main">
+			<div class="menu clearfix">
+				<div class="active fl">
+					<li><a href="javascript:void(0)">TA的文章</a></li>
+				</div>
+			</div>
+
+			<div class="personal-content">
+				{% if article_data == [] %}
+				<div class="item-list">
+					<p class="no-item">该用户还没有发布任何文章</p>
+				</div>
+				{% else %}
+				<div class="item-list">
+					{% for article in article_data %}
+					<div class="every-item">
+						<div class="item-title">
+							<a href="/detail?article_id={{article.article_id}}" target="_blank">
+								{{article.title}}
+							</a>
+						</div>
+						<div class="item-content clearfix">
+							<div class="item-image fl">
+								<a href="/detail?article_id={{article.article_id}}" target="_blank">
+									<img src="{{article.article_image}}" alt="" />
+								</a>
+							</div>
+							<div class="item-text fl">
+								{{article.article_content | striptags | truncate(255)}}
+							</div>
+						</div>
+						<div class="item-info">
+							<span>{{article.browse_num}}浏览</span>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+				{% endif %}
+			</div>
+		</div>
+    </body>
+</html>
+{% endblock %}

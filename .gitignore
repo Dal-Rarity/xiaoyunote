@@ -1,13 +1,71 @@
-# created by virtualenv automatically
+# ====================================================================
+# 小语手记 .gitignore
+# 分类原则：
+#   敏感/环境相关  -> 忽略（仅提交 *.example 模板）
+#   可再生产物    -> 忽略（缓存、虚拟环境、构建产物、日志）
+#   用户运行时数据 -> 忽略（上传的图片）
+#   前端静态资源    -> 提交（resource 下的 css/js/字体/默认图片/插件）
+# ====================================================================
 
-#Byte-complied / optimized /DLL files
+# ==================== 敏感信息（禁止提交） ====================
+# 环境变量文件（仅保留示例模板 *.example）
+.env
+*.env
+.env.local
+.env.*.local
+!.env.example
+!.env.*.example
+
+# Flask 持久化会话密钥（容器部署改用环境变量 SECRET_KEY）
+.secret_key
+
+# ==================== Python ====================
 __pycache__/
 *.py[cod]
 *$py.class
-log/
-resource/
-#C extensions
 *.so
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
 
-#Distribution / packaging
-.Python
+# 虚拟环境
+venv/
+.venv/
+env/
+ENV/
+
+# 测试 / 类型检查 / 覆盖率缓存
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ==================== 日志 ====================
+log/*
+!log/.gitkeep
+logs/
+*.log
+
+# ==================== 前端静态资源 ====================
+# resource/ 整体是站点必需的前端资源（css/js/字体/图片/编辑器插件），需要入库；
+# 仅排除用户运行时上传的内容。
+resource/upload/*
+!resource/upload/.gitkeep
+# 头像默认图 1.jpg~20.jpg 入库；用户上传头像命名为 user_<id>_<时间戳>.jpg
+resource/images/headers/user_*.jpg
+
+# ==================== AI 子服务本地数据 ====================
+services/ai_service/data/
+services/ai_service/logs/
+
+# ==================== 编辑器 / 系统文件 ====================
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini

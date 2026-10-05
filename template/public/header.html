@@ -20,8 +20,8 @@
 				</div>
 			<div class="heard-container clearfix">
 				<div class="heard-left fl">
-					<span><a href="">关注</a></span>
-					<span><a href="">消息</a></span>
+					<span><a href="/follow">关注</a></span>
+					<span><a href="/message">消息</a><span id="messageBadge" class="message-badge" style="display:none;">0</span></span>
 					<span onclick="toWriteArticlePage('{{session.get('is_login')}}')">创作</span>
 					<span><a href="/personal">我的</a></span>
 					</div>
@@ -30,13 +30,13 @@
 						<input type="text" class="searchbox" placeholder="搜索感兴趣的内容或文章"/>
 						<span class="iconfont" onclick="search_article()">&#xe628;</span>
 					</span>
-					<span class="iconfont">&#xe70e;</span>
+<!--					<span class="iconfont">&#xe70e;</span>-->
+                    <span class="iconfont ai-trigger" onclick="window.open('/ai', '_blank')">&#xe70e;</span>
 					<!-- <span class="iconfont user-trigger" id="userTrigger">&#xe604;</span> -->
 					<span class="login">
 						{% if session.get('is_login') == 'true' %}
-						<a href="">欢迎{{session.get('nickname')}}</a>
+						<a href="/personal">欢迎{{session.get('nickname')}}</a>
 						<a href="/personal"><img src="{{session.get('picture')}}" alt="" /></a>
-						<!-- <a href="">注销</a> -->
 						{% else %}
 						<span class="iconfont user-trigger" id="userTrigger">&#xe6de;</span>
 						{% endif %}
@@ -47,5 +47,11 @@
         </div>
 		
 		
+    <script type="text/javascript" src="/js/message.js"></script>
+    <script>
+        if (typeof pollUnreadCount === 'function') {
+            pollUnreadCount();
+        }
+    </script>
     {%  block content %}
 {%  endblock %}

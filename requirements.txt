@@ -1,0 +1,22 @@
+# 小语手记 · 主站运行依赖（Python 3.11）
+# 版本对应当前运行环境实际安装版本
+# 安装：pip install -r requirements.txt
+
+# ---- Web 框架 ----
+Flask==2.3.3
+
+# ---- 数据库 ----
+SQLAlchemy==2.0.48
+PyMySQL==1.2.0
+
+# ---- 缓存 ----
+redis==8.1.0
+
+# ---- 配置与密钥（从 .env 读取） ----
+python-dotenv==1.2.2
+
+# ---- AI 网关 HTTP 客户端 ----
+httpx==0.28.1
+
+# ---- 验证码图片生成 ----
+pillow==11.3.0

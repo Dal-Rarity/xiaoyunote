@@ -1,0 +1,45 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# 日志（运行时挂载 volume）
+log/
+logs/
+*.log
+
+# 本地数据
+seed_data/
+
+# 文档与测试（不进镜像）
+docs/
+deploy/
+tests/
+*.md
+
+# Git / IDE
+.git/
+.gitignore
+.idea/
+.vscode/
+
+# 密钥与环境变量（运行时通过 env_file / environment 注入）
+.env
+.env.*
+!.env.example
+.secret_key
+
+# 部署文件本身
+Dockerfile*
+docker-compose*.yml
+
+# AI 子服务（独立镜像构建）
+services/ai_service/

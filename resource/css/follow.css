@@ -1,0 +1,63 @@
+@import url('/css/personal_center.css');
+
+/* 关注列表项 */
+.follow-item {
+    border-bottom: 1px solid #edf1f2;
+    padding: 20px 0;
+    height: 80px;
+    line-height: 80px;
+}
+.follow-avatar img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-left: 10px;
+}
+.follow-info {
+    margin-left: 20px;
+}
+.follow-name a {
+    color: #14191e;
+    font-size: 16px;
+    font-weight: 700;
+}
+.follow-name a:hover {
+    color: #0E55F1;
+}
+/* 关注/取消关注按钮 */
+.follow-btn {
+    width: 80px;
+    height: 35px;
+    border-radius: 20px;
+    border: 1px solid #3377ff;
+    background-color: #3377ff;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-top: 22px;
+    outline: none;
+}
+.follow-btn:hover {
+    background-color: #1e5fd9;
+}
+.follow-btn.followed {
+    background-color: #fff;
+    color: #9199a1;
+    border: 1px solid #dddee0;
+}
+.follow-btn.followed:hover {
+    color: #4d555d;
+    border-color: #9199a1;
+}
+/* 用户主页头部操作区 */
+.user-home-action {
+    margin-top: 50px;
+    margin-right: 20px;
+}
+.follow-stats {
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 400;
+    margin-left: 15px;
+}

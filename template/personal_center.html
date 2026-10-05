@@ -1,80 +1,132 @@
 {% extends 'public/header.html' %}
 {% block content %}
 <link rel="stylesheet" href="/css/personal_center.css"/>
+<script type="text/javascript" src="/js/axios.min.js"></script>
+<script type="text/javascript" src="/js/header.js"></script>
         <div class="person-center-header">
 			<div class="user-info clearfix">
 				<div class="user-picture fl">
 					<img src="{{user.picture}}" alt="" />
 				</div>
-				<div class="personal-name fl">{{user.nickname}}</div>
+				<div class="personal-detail fl">
+					<div class="personal-name">{{user.nickname}}</div>
+					<div class="user-meta">
+						{% if user.gender %}<span>{{ user.gender }}</span>{% endif %}
+						{% if user.age %}<span>{{ user.age }}岁</span>{% endif %}
+						{% if user.address %}<span>{{ user.address }}</span>{% endif %}
+					</div>
+					{% if user.bio %}
+					<div class="user-bio">{{ user.bio }}</div>
+					{% endif %}
+				</div>
 			</div>
 		</div>
 		<div class="personal-main">
 			<div class="menu clearfix">
-				<!-- 判断具体哪个菜单是活动的菜单 -->
-				{% if active == 'article' %}
-				<div class="active fl">
-				{% else %}
-					<div class="every-menu">
-					{% endif %}
-						<li><a href="/personal?type=article">我的文章</a></li>
-						<li><a href="/personal?type=collection">我的收藏</a></li>
-						<li><a href="/personal?type=feedback">我的评论</a></li>
+				<div class="{{ 'active fl' if active == 'article' else 'every-menu fl' }}">
+					<li><a href="/personal?type=article">我的文章</a></li>
+				</div>
+				<div class="{{ 'active fl' if active == 'collection' else 'every-menu fl' }}">
+					<li><a href="/personal?type=collection">我的收藏</a></li>
+				</div>
+				<div class="{{ 'active fl' if active == 'feedback' else 'every-menu fl' }}">
+					<li><a href="/personal?type=feedback">我的评论</a></li>
+				</div>
+				<div class="{{ 'active fl' if active == 'settings' else 'every-menu fl' }}">
+					<li><a href="/personal?type=settings">设置</a></li>
+				</div>
+			</div>
+
+			<div class="personal-content">
+				{% if type_name == 'settings' %}
+				<!-- 设置表单 -->
+				<div class="settings-form">
+					<div class="settings-row">
+						<label>昵称</label>
+						<input type="text" id="setNickname" value="{{user.nickname or ''}}" placeholder="请输入昵称"/>
+					</div>
+					<div class="settings-row">
+						<label>性别</label>
+						<select id="setGender">
+							<option value="">未设置</option>
+							<option value="男" {{ 'selected' if user.gender == '男' else '' }}>男</option>
+							<option value="女" {{ 'selected' if user.gender == '女' else '' }}>女</option>
+						</select>
+					</div>
+					<div class="settings-row">
+						<label>年龄</label>
+						<input type="number" id="setAge" value="{{user.age or ''}}" placeholder="请输入年龄" min="0" max="150"/>
+					</div>
+					<div class="settings-row">
+						<label>地区</label>
+						<input type="text" id="setAddress" value="{{user.address or ''}}" placeholder="请输入地区"/>
+					</div>
+					<div class="settings-row">
+						<label>简介</label>
+						<textarea id="setBio" rows="4" placeholder="请输入个人简介">{{user.bio or ''}}</textarea>
+					</div>
+					<div class="settings-row">
+						<label>头像</label>
+						<div class="avatar-upload">
+							<img id="avatarPreview" src="{{user.picture}}" alt="头像" />
+							<input type="file" id="avatarFile" accept="image/*" style="display:none;"/>
+							<button onclick="document.getElementById('avatarFile').click()">更换头像</button>
+						</div>
+					</div>
+					<div class="settings-actions">
+						<button id="saveSettingsBtn" class="save-btn">保存修改</button>
+						<button id="logoutBtn" class="logout-btn">退出登录</button>
 					</div>
 				</div>
-				
-			</div>
-			
-			
-			<div class="personal-content">
-			<!-- 无内容时展现的内容 -->
-				{% if article_data==[] %}
-				<div class="item-list">
-					{% if type_name == 'article' %}
-					<p class="no-item">
-						你还没有任何文章，快去
-						<a href="/article/new">发表文章</a>
-					</p>
-					{% elif type_name == 'collection' %}
-					<p class="no-item">
-						你还没有任何文章收藏，快去
-						<a href="/">阅读文章</a>吧
-					</p>
-					{% elif type_name == 'feedback' %}
-					<p class="no-item">
-						你还没有任何文章评论，快去
-						<a href="/">阅读文章</a>吧
-					</p>
-					{% endif %}
-				</div>
+				<script type="text/javascript" src="/js/personal.js"></script>
 				{% else %}
-				<!-- 有内容时 -->
-				<div class="item-list">
-					{% for article in article_data %}
-					<div class="every-item">
-						<div class="item-title">
-							<a href="/detail?article_id={{article.article_id}}" target="_blank">
-								{{article.title}}
-							</a>
-							<!-- <span>{{article.article_type}}</span> -->
-						</div>
-						<div class="item-content clearfix">
-							<div class="item-image fl">
+				<!-- 无内容时展现的内容 -->
+					{% if article_data==[] %}
+					<div class="item-list">
+						{% if type_name == 'article' %}
+						<p class="no-item">
+							你还没有任何文章，快去
+							<a href="/article/new">发表文章</a>
+						</p>
+						{% elif type_name == 'collection' %}
+						<p class="no-item">
+							你还没有任何文章收藏，快去
+							<a href="/">阅读文章</a>吧
+						</p>
+						{% elif type_name == 'feedback' %}
+						<p class="no-item">
+							你还没有任何文章评论，快去
+							<a href="/">阅读文章</a>吧
+						</p>
+						{% endif %}
+					</div>
+					{% else %}
+					<!-- 有内容时 -->
+					<div class="item-list">
+						{% for article in article_data %}
+						<div class="every-item">
+							<div class="item-title">
 								<a href="/detail?article_id={{article.article_id}}" target="_blank">
-									<img src="{{article.article_image}}" alt="" />
+									{{article.title}}
 								</a>
 							</div>
-							<div class="item-text fl">
-								{{article.article_content | striptags | truncate(255)}}
+							<div class="item-content clearfix">
+								<div class="item-image fl">
+									<a href="/detail?article_id={{article.article_id}}" target="_blank">
+										<img src="{{article.article_image}}" alt="" />
+									</a>
+								</div>
+								<div class="item-text fl">
+									{{article.article_content | striptags | truncate(255)}}
+								</div>
+							</div>
+							<div class="item-info">
+								<span>{{article.browse_num}}浏览</span>
 							</div>
 						</div>
-						<div class="item-info">
-							<span>{{article.browse_num}}浏览</span>
-							<span>{{article.browse_num}}浏览</span>
-						</div>
+						{% endfor %}
 					</div>
-					{% endfor %}
-				</div>
+					{% endif %}
 				{% endif %}
 			</div>
 		</div>

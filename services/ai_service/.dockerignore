@@ -1,0 +1,38 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# 本地数据（语料/向量导出）
+data/
+logs/
+*.log
+
+# 文档与测试
+docs/
+deploy/
+tests/
+*.md
+
+# Git / IDE
+.git/
+.gitignore
+.idea/
+.vscode/
+
+# 密钥（运行时注入）
+.env
+.env.*
+!.env.example
+
+# 部署文件
+Dockerfile*
+docker-compose*.yml

@@ -1,0 +1,61 @@
+{% extends 'public/header.html' %}
+{% block content %}
+<link rel="stylesheet" href="/css/message.css"/>
+<script type="text/javascript" src="/js/axios.min.js"></script>
+<script type="text/javascript" src="/js/header.js"></script>
+<script type="text/javascript" src="/js/message.js"></script>
+        <div class="person-center-header">
+			<div class="user-info clearfix">
+				<div class="user-picture fl">
+					<img src="{{user.picture}}" alt="" />
+				</div>
+				<div class="personal-name fl">{{user.nickname}}</div>
+			</div>
+		</div>
+		<div class="personal-main">
+			<div class="menu clearfix">
+				<div class="active fl">
+					<li><a href="/message">消息通知</a></li>
+				</div>
+				<div class="every-menu fr" style="margin-right:10px;">
+					<li><a href="javascript:markAllRead()">全部已读</a></li>
+				</div>
+			</div>
+
+			<div class="personal-content">
+				{% if notification_list == [] %}
+				<div class="item-list">
+					<p class="no-item">暂无消息通知</p>
+				</div>
+				{% else %}
+				<div class="item-list">
+					{% for item in notification_list %}
+					<div class="message-item {{ 'unread' if item.notification.is_read == 0 else '' }} clearfix"
+                         onclick="readNotification({{item.notification.notification_id}}, '{{item.link}}')">
+						<div class="message-avatar fl">
+							<a href="{{item.link}}">
+								<img src="{{item.sender.picture}}" alt="" />
+							</a>
+						</div>
+						<div class="message-content fl">
+							<div class="message-text">
+								<a href="{{item.link}}">{{item.sender.nickname}}</a>
+								<span>{{item.type_text}}</span>
+								{% if item.article %}
+								<a href="{{item.link}}">《{{item.article.title}}》</a>
+								{% endif %}
+							</div>
+							<div class="message-time">{{item.notification.create_time}}</div>
+						</div>
+						{% if item.notification.is_read == 0 %}
+						<div class="unread-dot fr"></div>
+						{% endif %}
+					</div>
+					{% endfor %}
+				</div>
+				{% endif %}
+			</div>
+		</div>
+    </body>
+</html>
+{% endblock %}

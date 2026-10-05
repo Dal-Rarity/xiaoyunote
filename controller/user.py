@@ -1,3 +1,6 @@
+"""用户蓝图（session 版）：图形验证码、登录状态检查、登录/登出、
+资料更新、邮箱验证码与注册。验证码存 session，用户密码使用 MD5 校验。
+"""
 import code
 import email
 import hashlib
@@ -66,7 +69,7 @@ def login():
     password = request_data.get("password")
     vcode = request_data.get("vcode")
 
-    if not session.get("vcode") or vcode != session.get("vcode"):
+    if not session.get("vcode") or (vcode or "").lower() != session.get("vcode"):
         return response_message.UserMessage.error("验证码输入错误或已过期")
 
     #实现登录功能
@@ -79,7 +82,12 @@ def login():
         session["user_id"] = result[0].user_id
         session["username"] = username
         session["nickname"] = result[0].nickname
-        session["picture"] = config[env].user_header_image_path + result[0].picture
+        # 头像路径：已含前缀则直接使用，否则拼接
+        picture = result[0].picture or "1.jpg"
+        if picture.startswith(config[env].user_header_image_path):
+            session["picture"] = picture
+        else:
+            session["picture"] = config[env].user_header_image_path + picture
         # return response_message.UserMessage.success("登录成功")
         #cookie里记录信息
         response = make_response(response_message.UserMessage.success("登录成功"))
@@ -96,7 +104,7 @@ def login():
 # 退出登录
 @user.route('/logout', methods=['POST'])
 def logout():
-    session.pop('user_id', None)
+    session.clear()
     return jsonify({'code': 200, 'msg': '已退出'})
 
 # 更新用户资料（昵称、头像）

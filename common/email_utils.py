@@ -1,3 +1,4 @@
+"""邮件工具：生成注册验证码并通过 QQ 邮箱 SMTP_SSL 发送。"""
 # 所有邮箱相关的工具储存
 import random
 import string

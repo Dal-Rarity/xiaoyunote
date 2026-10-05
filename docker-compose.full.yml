@@ -1,0 +1,89 @@
+# =====================================================================
+# 小语手记 · 虚拟机部署编排（Ubuntu 24.04 虚拟机 192.168.56.200）
+#
+# 实测环境（2026-10-05 探测）：
+#   - 宿主原生 MySQL 8.0.46 监听 0.0.0.0:3306，xiaoyu@% 授权，
+#     xiaoyushouji 库 88 篇文章（Docker 里 3307 的 MySQL 数据/授权不全，不用）
+#   - 宿主已运行 redis-stack（0.0.0.0:6379）：db0=AI 缓存/历史，db1=主站缓存
+#   - 宿主已运行 qdrant（0.0.0.0:6333）：xiaoyunote_articles 108 点 green
+#   - Windows Ollama bge-m3：192.168.56.1:11434（VM 实测 200 可达）
+#
+# 本编排"新增且仅新增"3 个容器：nginx / flask / ai
+# MySQL / Redis / Qdrant 全部复用宿主体量，经 host.docker.internal 访问
+# （host-gateway 指向虚拟机宿主；这三服务均已发布 0.0.0.0 端口）
+#
+# 启动：
+#   cd ~/xiaoyunote
+#   docker compose -f docker-compose.full.yml up -d --build
+# =====================================================================
+
+services:
+  # ==================== 统一入口 ====================
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: xiaoyu-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./deploy/nginx-full.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      flask:
+        condition: service_healthy
+      ai:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ==================== Flask 主站 ====================
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: xiaoyunote-flask:latest
+    container_name: xiaoyu-flask
+    env_file:
+      - .env
+    environment:
+      # 宿主原生 MySQL 3306（覆盖 .env 中本地开发用的 3307）
+      DB_HOST: host.docker.internal
+      DB_PORT: "3306"
+      # 复用宿主 redis-stack（覆盖 .env 中写死的 192.168.56.200）
+      REDIS_HOST: host.docker.internal
+      REDIS_PORT: "6379"
+      # AI 服务走 Docker 内网 service 名
+      AI_SERVICE_URL: http://ai:8100
+      # 与 ai 服务 INTERNAL_TOKEN 一致（从根 .env 插值，两边自动相等）
+      AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN:-change-me-to-a-random-string}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # 用户上传内容与日志持久化到宿主项目目录
+      - ./resource/upload:/app/resource/upload
+      - ./resource/images/headers:/app/resource/images/headers
+      - ./log:/app/log
+    depends_on:
+      ai:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ==================== FastAPI AI 服务 ====================
+  ai:
+    build:
+      context: ./services/ai_service
+      dockerfile: Dockerfile
+    image: xiaoyunote-ai:latest
+    container_name: xiaoyu-ai
+    env_file:
+      - ./services/ai_service/.env
+    environment:
+      # 复用宿主 Qdrant / Redis（注意不是新起容器 service 名）
+      QDRANT_URL: http://host.docker.internal:6333
+      REDIS_URL: redis://host.docker.internal:6379/0
+      # Embedding 在 Windows 主机（VirtualBox Host-only 网段 .1）
+      EMBED_BASE_URL: http://192.168.56.1:11434/v1
+      # 与主站网关一致的内部 Token
+      INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN:-change-me-to-a-random-string}
+      # 语料同步脚本连宿主原生 MySQL 3306（凭据从根 .env 插值，不硬编码）
+      MYSQL_DSN: mysql+pymysql://${DB_USER}:${DB_PASSWORD}@host.docker.internal:3306/${DB_NAME}?charset=utf8mb4
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

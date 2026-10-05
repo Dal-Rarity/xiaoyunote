@@ -1,3 +1,7 @@
+"""评论蓝图：UEditor 评论编辑器配置/图片上传、发表一级评论与回复评论。
+
+全部路由经 before_request 登录拦截；评论/回复成功后向文章作者发通知。
+"""
 import json
 import logging
 from datetime import time
@@ -48,6 +52,9 @@ def ueditor():
         result["title"] = filename
         result["original"] = filename
         return jsonify(result)
+    else:
+        # 其他 action（如 listimage 等）不做支持，返回空成功响应避免500
+        return jsonify({"state": "SUCCESS"})
 
 # 添加发表评论的接口开发
 @feedback.route("/feedback/add", methods=["POST"])
@@ -68,6 +75,18 @@ def add():
                                          article_id=article_id,
                                          content=content,
                                          ipaddr=ipaddr)
+        # 评论时给文章作者发通知
+        from model.article import Article, db_session
+        from model.notification import Notification
+        article = db_session.query(Article).filter_by(article_id=article_id).first()
+        if article:
+            Notification().create_notification(
+                user_id=article.user_id,
+                sender_id=user_id,
+                type="comment",
+                article_id=article_id,
+                content=content[:100]
+            )
         # 返回前端
         result = model_to_json(result)
         # 返回给后端自己
@@ -99,6 +118,18 @@ def replay():
                             ipaddr=ipaddr,
                             replay_id=replay_id,
                             base_replay_id=base_replay_id)
+        # 回复评论时给文章作者发通知
+        from model.article import Article, db_session
+        from model.notification import Notification
+        article = db_session.query(Article).filter_by(article_id=article_id).first()
+        if article:
+            Notification().create_notification(
+                user_id=article.user_id,
+                sender_id=user_id,
+                type="comment",
+                article_id=article_id,
+                content=content[:100]
+            )
         # 返回给后端自己
         return response_message.FeedbackMessage.success("评论成功")
     except Exception as e:

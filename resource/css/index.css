@@ -1,0 +1,251 @@
+/* 头部样式 */
+.heard {
+	height: 65px;
+	border-bottom: 2px solid #f3f5f6;
+	background-color: #fff;
+	display: flex;
+	justify-content: space-between;  /* 两端对齐 */
+	align-items: center;
+	/* 使用粘性定位 */
+	position: sticky;
+	top: 0;
+	box-shadow: 0 4px 8px 0 rgb(7 17 27 / 10%);
+}
+.heard-container {
+	width: 1000px;
+	/* border: 1px solid red; */
+	margin: 0 auto;
+	height: 65px;
+	line-height: 65px;
+	float: top;
+	font-size: 25px;
+	/* color: #1296db; */
+}
+.heard-left-container {
+	width: 160px;
+	height: 65px;
+	margin: 0 auto;
+	line-height: 65px;
+	float: left;
+}
+.heard-left-container span {
+	font-size: 20px;
+	color: #1296db;
+}
+.heard-left-container>img {
+	width: 45px;
+	height: 45px;
+	cursor: default;
+}
+
+/* 头部左侧设置 */
+.heard-left span {
+	margin-right: 20px;
+	color: #545c63;
+	cursor: pointer;
+}
+.heard-left span a {
+	color: #545c63;
+}
+.heard-left span a:hover {
+	color:#1c1f21;
+}
+.heard-left span:hover {
+	color: #1c1f21;
+}
+
+/* 头部右侧设置 */
+.heard-right input {
+	border: 2px solid #33a4ff;
+	width: 280px;
+	height: 25px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	/* margin-right:-7px; */
+	transform: translate(7px, -6px); 
+}
+.heard-right>span>span {
+	border: 2px solid #33a4ff;
+	display: inline-block;
+	font-size: 25px;
+	height: 26px;
+	width: 26px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	line-height: 25px;
+	cursor: pointer;
+}
+.heard-right>span {
+	margin-left: 20px;
+	font-size: 25px;
+	color: #33a4ff;
+}
+.heard-right>span:hover {
+	color: blue;
+	cursor: pointer;
+}
+
+/* 文章内容样式 */
+.article-container {
+	width: 1500px;
+	margin-top: 20px;
+}
+/* 左侧菜单栏 */
+.left-menu {
+	width: 160px;
+	height: 380px;
+	background-color: #fff;
+	border-radius: 10px;
+	position: sticky;
+	top: 85px;
+}
+.left-menu>div {
+	width: 100px;
+	height: 50px;
+	text-align: center;
+	margin-top: 10px;
+	/* border: 1px solid red; */
+	margin-left: 25px;
+	line-height: 50px;
+}
+.left-menu .selected {
+	background-color: #eaf1ff;
+	border-radius: 5px;
+}
+.left-menu .selected a {
+	color: #3377ff;
+	font-weight: 700;
+}
+.left-menu>div>a {
+	font-size: 20px;
+}
+.left-menu>div>a:hover {
+	color: #33a4ff;
+}
+
+/* 文章主题 */
+.article-wapper {
+	width: 1320px;
+	/* height: 1000px; */
+	background-color: #fff;
+	margin-left: 20px;
+	border-radius: 10px;
+}
+
+.article-inner {
+	margin: 20px 20px;
+}
+.article-row {
+	/* border: 1px solid red; */
+	height: 75px;
+}
+.article-row>div {
+	display: inline-block;
+}
+.article-heard-image img {
+	width: 66px;
+	height: 66px;
+	border-radius: 5px;
+}
+.article-name {
+	height: 36px;
+	line-height: 36px;
+	font-weight: 700;
+}
+.article-name:hover {
+	color: #3377ff;
+	cursor: pointer;
+}
+
+.article-name a {
+	height: 36px;
+	line-height: 36px;
+	font-weight: 700;
+}
+.article-name a :hover {
+	color: #3377ff;
+	cursor: pointer;
+}
+
+.article-desc {
+	margin-left: 15px;
+	width: 1150px;
+	height: 75px;
+	line-height: 75px;
+	border-bottom: 2px solid #e8e8e8;
+}
+.article-info {
+	/* border: 1px solid red; */
+	height: 36px;
+	line-height: 36px;
+}
+
+.article-left span {
+	display: inline-block;
+	height: 25px;
+	line-height: 25px;
+	text-align: center;
+	font-size: 12px;
+	margin-right: 20px;
+}
+.article-left span:nth-child(2):before {
+	content: "\e6e0";
+}
+.article-left span:first-child {
+	color: #1c1f21;
+	background: rgba(84,92,99,0.1);
+	width: 75px;
+	border-radius: 13px;
+}
+.article-left span:nth-child(n+2) {
+	color: #9199a1;
+	font-size: 12px;
+}
+.article-right {
+	color: #9199a1;
+	font-size: 12px;
+}
+
+/* 下滑加载更多样式 */
+.load-more {
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	color: #9199a1;
+	font-size: 12px;
+}
+
+/* 登陆成功后头像信息样式 */
+.login a img{
+	height: 35px;
+	width: 35px;
+	object-fit: cover;
+	border-radius: 50%;
+	border: 2px solid #f3f5f6;
+}
+.login a img:hover{
+	border:2px solid #f01616
+}
+
+/* 消息未读数徽章 */
+.message-badge {
+    display: inline-block;
+    min-width: 16px;
+    height: 16px;
+    line-height: 16px;
+    padding: 0 5px;
+    border-radius: 8px;
+    background-color: #fe2c55;
+    color: #fff;
+    font-size: 10px;
+    text-align: center;
+    vertical-align: top;
+    margin-left: -5px;
+    margin-top: 15px;
+}
+
+.login a {
+	/* margin-left: 20px; */
+	font-size: 25px;
+	color: #33a4ff;
+}

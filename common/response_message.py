@@ -1,3 +1,9 @@
+"""统一 JSON 响应封装。
+
+按业务域约定状态码段：用户 1xxx、文章 2xxx、收藏 3xxx、评论 4xxx、
+喜欢 5xxx、个人中心 6xxx、关注 7xxx、通知 8xxx；
+每个域统一提供 success / error / other 三种结果。
+"""
 # 存放邮箱登录的详细信息
 
 class UserMessage():
@@ -91,3 +97,31 @@ class PersonalMessage():
     @staticmethod
     def other(data):
         return {"status": "6001", "data": data}
+
+# 关注以7开头
+class FollowMessage():
+    @staticmethod
+    def success(data):
+        return {"status": "7000", "data": data}
+
+    @staticmethod
+    def error(data):
+        return {"status": "7002", "data": data}
+
+    @staticmethod
+    def other(data):
+        return {"status": "7001", "data": data}
+
+# 消息通知以8开头
+class NotificationMessage():
+    @staticmethod
+    def success(data):
+        return {"status": "8000", "data": data}
+
+    @staticmethod
+    def error(data):
+        return {"status": "8002", "data": data}
+
+    @staticmethod
+    def other(data):
+        return {"status": "8001", "data": data}

@@ -1,3 +1,9 @@
+"""UEditor Plus 富文本编辑器的前端配置字典。
+
+由 /feedback?action=config 等接口下发给编辑器，约定上传接口名、
+文件大小/类型限制、图片压缩等参数。文件内包含写文章用 UECONFIG
+与评论区用 FEEDBACK_UECONFIG 两套配置。
+"""
 UECONFIG = {
     # 编辑器初始化内容
     "initialContent": '<p>我是初始化内容，设不设置都可以</p>',

@@ -1,3 +1,8 @@
+"""公共工具包。
+
+导入本包即配置全局日志：日志同时输出到控制台与 log/xiaoyunote.log
+（按 1MB 滚动、最多保留 10 份），日志等级随 FLASK_ENV 切换。
+"""
 import logging
 from logging.handlers import RotatingFileHandler
 from app.config.config import config

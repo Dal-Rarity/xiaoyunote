@@ -1,3 +1,8 @@
+"""用户模型：映射现有 user 表（反射，非声明式建表）。
+
+封装注册、按用户名/邮箱/ID 查询、资料更新等操作；
+注册时随机分配 1~20.jpg 默认头像，密码由调用方做 MD5。
+"""
 import hashlib
 import random
 
@@ -21,8 +26,8 @@ class User(Base):
     #注册时检验
     def do_register(self, username, password):
         nickname = username.split("@")[0]
-        #头像
-        picture_num = random.randint(1, 23)
+        #头像（headers 目录共 20 张）
+        picture_num = random.randint(1, 20)
         picture = str(picture_num) + ".jpg"
         user = User(username=username, password=password, nickname=nickname, picture=picture)
         db_session.add(user)
@@ -63,10 +68,18 @@ class User(Base):
         db_session.commit()
         return user
 
-    def update_profile(self, nickname=None, picture=None):
-        """更新用户昵称或头像（头像可以是 base64 或 URL）"""
+    def update_profile(self, nickname=None, picture=None, gender=None, age=None, address=None, bio=None):
+        """更新用户资料（昵称、头像、性别、年龄、地区、简介）"""
         if nickname is not None:
             self.nickname = nickname
         if picture is not None:
             self.picture = picture
+        if gender is not None:
+            self.gender = gender
+        if age is not None:
+            self.age = age
+        if address is not None:
+            self.address = address
+        if bio is not None:
+            self.bio = bio
         db_session.commit()

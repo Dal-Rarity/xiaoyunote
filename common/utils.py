@@ -1,3 +1,4 @@
+"""通用工具：图形登录验证码（Pillow 绘制）、ORM 实体转字典、上传图片等比压缩。"""
 import random
 import string
 from datetime import datetime
@@ -89,8 +90,8 @@ def compress_image(source,dest,width=1200):
         #进行等比例压缩
         ys = int(y*width/x)
         xs = width
-        #调整图片大小
-        temp = im.resize((xs,ys),Image.ANTIALIAS)
+        #调整图片大小（Pillow 10+ 移除了 ANTIALIAS，改用 LANCZOS）
+        temp = im.resize((xs,ys),Image.LANCZOS)
         temp.save(dest,quality=90)
     else:
         im.save(dest,quality=90)

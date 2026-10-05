@@ -1,3 +1,4 @@
+"""喜欢（点赞）模型：映射 favorite 表，按 (用户, 文章) 维度 upsert 喜欢状态。"""
 from app.config.config import config
 from app.settings import env
 from common.database import db_connect
@@ -9,8 +10,8 @@ class Favorite(Base):
     __table__ = Table("favorite", Base.metadata,autoload_with=engine)
 
     def update_status(self,article_id,user_id,canceled=0):
-        # canceled的值为0表示喜欢，为1的意思就是不喜欢
-
+        # canceled：0=喜欢，1=取消喜欢
+        # 没有记录则插入，已有记录则更新状态
         favorite_data = db_session.query(Favorite).filter_by(
             article_id=article_id,
             user_id=user_id,
@@ -25,15 +26,3 @@ class Favorite(Base):
         else:
             favorite_data.canceled = canceled
         db_session.commit()
-
-# 查询数据库中用户是否喜欢
-def user_if_favorite(self,user_id,article_id):
-    result = db_session.query(Favorite.canceled).filter_by(
-        user_id=user_id,
-        article_id=article_id
-    ).first()
-    # 存在记录且 canceled == 0 表示喜欢
-    if result and result[0] == 0:
-        return 1
-    else:
-        return 0

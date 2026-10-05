@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 问答 · 小语手记</title>
+  <link rel="stylesheet" href="/css/ai_chat.css">
+  {# 如你有主站公共样式，可在此引入，如：
+     <link rel="stylesheet" href="/css/base.css">
+  #}
+</head>
+<body>
+  {# 沿用主站公共导航（如你有 header.html，改成 {% include "public/header.html" %}） #}
+  {% include "public/header.html" %}
+
+  <main class="ai-page">
+    <div class="ai-header">
+      <h1>小语手记 AI 助手</h1>
+      <p class="ai-subtitle">基于博主的真实文章回答问题</p>
+    </div>
+
+    <div id="ai-log" class="ai-log">
+      <div class="ai-welcome">
+        你好，我是「小语手记」的 AI 助手。你可以问我关于博客文章的任何问题，比如“我写过的影评里提到过哪些电影？”
+      </div>
+    </div>
+
+    <div class="ai-input-bar">
+      <textarea id="ai-q" rows="2" placeholder="问我关于这些文章的任何问题…（Enter 发送，Shift+Enter 换行）"></textarea>
+      <div class="ai-buttons">
+        <button id="ai-stop" disabled>停止</button>
+        <button id="ai-send">发送</button>
+      </div>
+    </div>
+  </main>
+
+  {# 注入当前登录用户 ID，用于 localStorage 按用户隔离 #}
+  <script>
+    window.__AI_USER_ID__ = "{{ session.get('user_id', '') }}";
+  </script>
+  <script src="/js/ai_chat.js"></script>
+</body>
+</html>
