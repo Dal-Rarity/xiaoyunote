@@ -1,6 +1,6 @@
 # 小语手记（xiaoyunote）
 
-一个基于 Flask 的个人博客 / 手记社区，在已有的文章、收藏、关注、评论等社交功能之上，**以零侵入方式接入独立 FastAPI RAG 问答服务**：读者用自然语言提问，系统基于博主真实的 88 篇文章流式作答，检索不到则拒答，避免幻觉。
+一个独立开发的 Flask 多用户博客 / 手记社区，从零实现了文章、收藏、关注、评论等完整社交功能，并在其上**以零侵入方式接入独立 FastAPI RAG 问答服务**：读者用自然语言提问，系统基于博主真实的 88 篇文章流式作答，检索不到则拒答，避免幻觉。
 
 - 主站入口：`main.py`（Flask，端口 `5000`）
 - AI 服务：`services/ai_service`（FastAPI，端口 `8100`）
@@ -8,14 +8,25 @@
 
 ## 项目简介
 
-博客原有搜索仅支持关键词匹配，读者常因换了说法就找不到内容。本项目在**不改动主站原有业务代码**的前提下，新增一个 AI 网关蓝图（`controller/ai.py`，注册仅 2 行），把登录态校验留在 Flask，把 RAG 检索与流式生成下沉到独立 FastAPI 服务。检索采用「向量召回 Top15 → Cross-Encoder 精排 Top5 → 0.2 阈值拒答」两阶段链路，配合 Redis 会话历史与检索感知缓存，最终 8 道精确题 Recall@5=1.0，首字延迟 782ms，29 个 pytest 全绿。
+从 0 到 1 独立开发了 Flask 多用户博客主站（MVC 架构）：文章发布/编辑/删除、Markdown 富文本、用户注册登录、收藏、点赞、评论、关注、消息通知——全栈闭环。为提升使用体验，让用户能随时回顾自己的创作、了解自己的成长变化，**在不改动已有业务代码的前提下**，以新增蓝图（`controller/ai.py`，注册仅 2 行）零侵入接入独立 FastAPI RAG 服务——用户用自然语言提问（如"我写过哪些影评"），系统基于真实文章流式作答。架构上把登录态留在 Flask，把向量检索与流式生成下沉到 AI 层。检索采用「向量召回 Top15 → Cross-Encoder 精排 Top5 → 0.2 阈值拒答」两阶段链路，配合 Redis 会话历史与检索感知缓存，最终 8 道精确题 Recall@5=1.0，首字延迟 782ms，29 个 pytest 全绿。
+
+## 核心指标
+
+| 指标 | 数值 |
+| --- | --- |
+| 精确题 Recall@5 | **1.0**（8/8） |
+| 首字延迟 TTFT | **782 ms**（优化前 3791 ms，降幅 79%） |
+| 端到端延迟 P50 | 约 4.9 s |
+| 缓存命中提速 | **5.4 倍**（3675 ms → 678 ms） |
+| 自动化测试 | **29 个全部通过**（AI 服务 26 + 网关 3） |
+
 
 ## 系统架构
 
 ```mermaid
 flowchart LR
     Browser[浏览器<br/>ai_chat.html] -->|HTTP + SSE :80| Nginx[Nginx]
-    Nginx -->|页面/主站接口| Flask[Flask 主站 :5000<br/>网关: 登录态 + 注入内部头]
+    Nginx -->|页面 / 主站接口<br/>含 /api/ai/chat/stream| Flask[Flask 主站 :5000<br/>网关: 登录态 + 注入内部头]
     Nginx -->|/health /metrics| AI[FastAPI AI 服务 :8100<br/>RAG 核心]
     Flask -->|SSE 透传<br/>X-User-Id + X-Internal-Token| AI
     Flask --> MySQL[(MySQL<br/>88篇文章+行为数据)]
@@ -27,7 +38,7 @@ flowchart LR
     AI --> LLM[通义 qwen3.8-flash<br/>备选: DeepSeek]
 ```
 
-> 关键约束：`/api/ai/chat/stream` **必须经 Flask 网关**，浏览器不能直连 AI 服务——直连缺少 `X-Internal-Token` 会被 AI 服务返回 401。登录态只在 Flask 判定，AI 服务只信内部 Token。
+> **关键约束**：`/api/ai/chat/stream` **必须经 Flask 网关**——Nginx 把该路由转发给 Flask（见 `deploy/nginx-full.conf` 中的 `location = /api/ai/chat/stream`），Flask 校验 session 登录态后注入 `X-User-Id` + `X-Internal-Token`，再转发给 AI 服务。浏览器不能直连 AI 服务（直连缺少 `X-Internal-Token` 会返回 401）；`/health`、`/metrics` 才由 Nginx 直达 AI 服务。
 
 ## 快速启动
 
@@ -60,6 +71,8 @@ docker compose -f docker-compose.full.yml up -d --build
 ```
 
 `docker-compose.full.yml` 只构建 nginx / flask / ai 三个容器，MySQL / Redis / Qdrant / Ollama 复用宿主机已有服务（经 `host.docker.internal` 访问）。前置条件：宿主 MySQL 授权 `xiaoyu@'%'`、Qdrant/Redis/Ollama 监听 `0.0.0.0`。
+
+> **注意**：`deploy/nginx-full.conf` 中 `/api/ai/chat/stream` 必须指向 `flask_backend`（走 Flask 网关），不能指向 `ai_backend`——否则浏览器直连 AI 服务会因缺少内部 Token 返回 401。
 
 ## 效果展示
 
@@ -123,58 +136,104 @@ xiaoyunote/
 - **检索感知缓存**：指纹含 `chunk_id`，语料更新自动失效
 - **可观测性**：JSON 结构化日志（trace_id + user_id + elapsed_ms + recall + cache_hit + refused）；`/metrics` 暴露 requests / refusal_rate / cache_hit_rate / p50 / p95 / p99
 
-## Roadmap（已知薄弱点 → 未来规划）
+## 核心接口
 
-> 同一个事实，写在简历上是漏洞，写在这里是自我认知与规划能力。以下均来自开发期的真实风险评估与评测发现。
+### `POST /api/ai/chat/stream`（浏览器唯一入口，经 Flask 网关）
 
-| # | 当前状态（薄弱点） | 规划方向 | 来源 |
-|---|---|---|---|
-| 1 | FastAPI 单实例，流量放大后并发瓶颈 | 加 worker + Nginx 负载均衡 | 技术选型风险表 |
-| 2 | Qdrant 单机，千万级向量后性能下降 | Qdrant 水平扩展，或迁移 Milvus | 技术选型风险表 |
-| 3 | 本地 Ollama，GPU 显存不足、多 worker 冲突 | 降为 1 worker，或迁移 vLLM | 技术选型风险表 |
-| 4 | 硅基流动 Rerank 免费档，存在限流 | 切换付费档或备用 Rerank 服务 | 技术选型风险表 |
-| 5 | 通义 LLM 按量计费，流量上升成本增加 | 切换 DeepSeek 或本地 LLM 兜底 | 技术选型风险表 |
-| 6 | Flask 网关单点 | 主站多实例 + Nginx 负载均衡 | 技术选型风险表 |
-| 7 | 聚合类问题（跨多篇文章）回答能力不足 | 已将 TopK 由 5 调至 15，继续用行为数据补充上下文 | eval-score-v1 / params-frozen |
-| 8 | 语义相似的无关问题（如"昆明天气"召回"昆明的雨"）检索层阈值拦不住 | 最终拒答由 LLM 层兜底，数据层阈值仍待进一步校准 | params-frozen T13 |
+请求体：
 
-## TROUBLESHOOTING（开发期排查台账）
+```json
+{
+  "question": "我关于《三体》写了什么？",
+  "session_id": "sess-abc12345"
+}
+```
 
-> 以下为开发与部署中**实际遇到**的问题及解法，按类别整理。共 24 条，不做编造。
+响应为 `text/event-stream`，正常事件序列：
 
-### RAG / 检索质量
+```
+event: sources  → {"items":[{"article_id","title","category","data_type","score"}]}
+event: delta    → {"text":"..."}        # 重复 N 次，逐字流式
+event: done     → {"elapsed_ms":4372}
+data: [DONE]
+```
 
-| # | 现象 | 根因 | 解法 |
-|---|---|---|---|
-| 1 | 应能答的题被拒答（Q1/3/4/5/10） | 初始阈值 0.4 过高 + 向量检索对泛化查询召回弱 | 阈值降至 0.2 |
-| 2 | 聚合类问题无法回答（Q6/7/8） | TopK=5 太小，跨文档聚合能力不足 | TopK 调至 15 |
-| 3 | 无关问题"昆明天气"被回答 | 语料含大量"昆明的雨"，向量语义相似，阈值拦不住 | 最终拒答交由 LLM 层判断 |
-| 4 | 模型自称"我自己写的"，身份错位 | 提示词未明确 AI 是助手而非博主 | 修正规则 4，强制用"你"称呼博主 |
-| 5 | 引用编号全是【1】，不区分来源 | Dify 把多条召回片段合并为单一 context | 工程化自行拼装 context，按片段编号 |
-| 6 | 首字延迟 3.8s，体验差 | qwen3.8-flash 默认开启 thinking 模式 | API 传 `enable_thinking: False`，TTFT 降至 782ms |
-| 7 | Dify 无法导入 `.jsonl` | Dify 社区版不支持 `.jsonl` 直接上传 | 改用逐篇 TXT + API 批量导入 |
-| 8 | 混合检索返回空结果 | Dify 1.17.0 平台层问题 | 放弃混合检索，采用向量检索 + Rerank |
-| 9 | 语料含 HTML 标签污染 | 文章正文来自富文本编辑器 | 导出 TXT 时清洗标签 |
-| 10 | Rerank 分数体系与 Dify 不一致 | 工程版原始分约 0.30，Dify 做了归一化 | 阈值按工程版实际分数重新校准 |
-| 11 | Ollama 首次调用很慢 | 模型冷启动加载 | 预热 / 接受首次约 14s 延迟 |
-| 12 | 安全题检索层未拒答 | 阈值 0.2 拦不住语义相似问题 | 依赖 LLM 层拒答（已验证生效） |
+检索无结果时拒答（不调用 LLM）：
 
-### 架构 / 部署
+```
+event: refused → {"text":"这个问题在我的笔记里没有找到相关内容..."}
+event: done    → {"elapsed_ms":320}
+data: [DONE]
+```
 
-| # | 现象 | 根因 | 解法 |
-|---|---|---|---|
-| 13 | SSE 流式输出被缓冲，前端一次性收到 | Nginx 默认开启代理缓冲 | 响应头加 `X-Accel-Buffering: no` |
-| 14 | 浏览器直连 AI 服务返回 401 `invalid internal token` | 直连请求缺少 `X-Internal-Token` | `/api/ai/chat/stream` 必须经 Flask 网关 |
-| 15 | git 历史提交含明文 MySQL 密码与邮箱授权码 | 早期 config.py 硬编码凭据 | 迁移至 `.env`，建议轮换凭据 |
-| 16 | `.env.example` 行尾中文注释被解析进变量值 | dotenv/pydantic 把行内注释当值 | 去掉行内注释，注释单独成行 |
-| 17 | 新克隆仓库无样式 | `.gitignore` 一刀切 `resource/` 导致静态资源未入库 | 精细化规则：提交 css/js/字体/默认图，仅忽略 upload 与用户头像 |
-| 18 | PowerShell 远程执行脚本报 `$'\r': command not found` | Windows 换行符 CRLF 传入 Linux | 传管道前 `sed "s/\r$//"` 或用 LF |
-| 19 | 本机 Docker 镜像拉取失败 | 默认镜像加速器失效 | 切换可用加速器（如 daocloud） |
-| 20 | 容器内连不上 MySQL | 误连容器内 3307（授权不全） | 复用宿主机原生 MySQL 3306，`host.docker.internal` |
-| 21 | SECRET_KEY 每次重启变化导致 session 失效 | 未持久化密钥 | 优先级：环境变量 → `.secret_key` 文件 → 自动生成 |
-| 22 | AI 服务地址读取混乱 | 硬编码与环境变量混用 | 统一优先级：环境变量 → `ai_service/.env` → `127.0.0.1:8100` |
-| 23 | 容器内 Flask 又拉起 AI 子进程 | `main.py` 默认拉起子进程 | `RUNNING_IN_DOCKER=1` 或 `/.dockerenv` 检测，容器内 `START_AI_CHILD=0` |
-| 24 | Redis 挂掉后问答不可用 | 缓存与历史强依赖 Redis | Redis 设为 fail-open：挂了照常问答，仅日志 warn |
+状态码：`200` 正常 / `401` 未登录或内部 Token 错误 / `422` 参数非法（问题为空或会话 ID 不合法）/ `502` AI 服务不可用。
+
+### `GET /health`
+
+```json
+{"status": "ok", "service": "xiaoyunote-ai", "qdrant": "up", "redis": "up", "llm": "configured"}
+```
+
+### `GET /metrics`
+
+返回进程内聚合指标（不泄露用户内容）：`requests`、`refused`、`cache_hit`、`errors`、`refusal_rate`、`cache_hit_rate`、`p50_ms`、`p95_ms`、`p99_ms`。
+
+## 参数配置（params-frozen-v1）
+
+参数集中在 `services/ai_service/ai_app/config.py`，均可通过 `.env` 覆盖。
+
+| 参数 | 冻结值 |
+| --- | --- |
+| 检索模式 | 向量检索 + Rerank（Dify 混合检索平台层有缺陷，弃用） |
+| 向量召回 TopK（`RECALL_TOP_K`） | 15 |
+| 精排 TopN（`RERANK_TOP_N`） | 5 |
+| 相关性阈值（`SCORE_THRESHOLD`） | 0.2 |
+| 分块大小 / 重叠 | 800 / 50 |
+| Embedding | bge-m3（1024 维，本地 Ollama） |
+| Rerank | BAAI/bge-reranker-v2-m3 |
+| LLM | qwen3.8-flash（备选 deepseek-chat） |
+| 温度（`LLM_TEMPERATURE`） | 0.3 |
+| `enable_thinking` | False（TTFT 3791ms → 782ms） |
+| 会话历史 | Redis List 保留最近 3 轮 |
+
+## Roadmap
+
+| # | 当前状态 | 规划方向 |
+|---|---|---|
+| 1 | FastAPI 单实例，并发量上升后有瓶颈 | 加 worker + Nginx 负载均衡 |
+| 2 | Qdrant 单机，千万级向量后性能下降 | 水平扩展或迁移 Milvus |
+| 3 | 本地 Ollama，GPU 显存有限 | 迁移 vLLM，提升并发能力 |
+| 4 | Rerank 依赖云 API，免费档有限流 | 切换付费档或备用服务 |
+| 5 | LLM 按量计费，流量上升成本增加 | 切换 DeepSeek 或本地 LLM 兜底 |
+| 6 | Flask 网关单点 | 主站多实例 + Nginx 负载均衡 |
+| 7 | 聚合类问题（跨多篇文章）回答能力有限 | 按意图动态调整 TopK，或结构化查询辅助 |
+| 8 | 语义相似的无关问题（如"昆明天气"召回"昆明的雨"）阈值拦截不够精确 | 引入意图分类器辅助判断 |
+| 9 | 多 Agent 协作写作工作流 | LangGraph + MCP 工具接入 |
+
+## 关键工程经验
+
+开发过程中验证得到的关键问题与方案。
+
+### RAG 检索与生成
+
+| 问题 | 方案 |
+| --- | --- |
+| 初始阈值 0.4 误杀大量可回答问题 | 阈值降至 0.2，精确题 Recall@5 达 1.0 |
+| TopK=5 时跨多篇文章的聚合题无法回答 | TopK 调至 15，平衡召回与噪声 |
+| 语义相似的无关问题（"昆明天气"召回"昆明的雨"）检索层阈值拦不住 | 分层拒答：检索层阈值初筛，LLM 层对安全 / 无关问题兜底拒答 |
+| 模型自称"我自己写的"，身份错位 | 提示词明确 AI 是助手，统一用"你"称呼博主 |
+| Dify 将多条召回片段合并为单一 context，引用编号全是【1】 | 工程化自行拼装 context，按片段独立编号与溯源 |
+| qwen3.8-flash 默认 thinking 模式导致首字延迟 3.8s | API 传 `enable_thinking: False`，TTFT 降至 782ms |
+| Dify 1.17.0 混合检索平台层缺陷、返回空结果 | 弃用混合检索，改为「向量召回 + Cross-Encoder Rerank」两阶段架构 |
+| 工程版 Rerank 原始分（约 0.30）与 Dify 归一化分数量纲不一致 | 阈值不照搬 Dify，按工程版实测分布重新校准 |
+
+### 架构与工程
+
+| 问题 | 方案 |
+| --- | --- |
+| SSE 流式输出被 Nginx 缓冲，前端一次性收到整段回答 | 响应头 `X-Accel-Buffering: no` + `proxy_buffering off` |
+| 浏览器直连 AI 服务拿到 401 | 问答流量统一走 Flask 网关注入内部 Token，AI 端口不对外暴露 |
+| Redis 故障会导致问答整体不可用 | Redis / Rerank 设为 fail-open 降级，问答主链路不中断 |
 
 ## 环境变量
 
@@ -200,7 +259,7 @@ xiaoyunote/
 | `INTERNAL_TOKEN` | 内部鉴权 Token，与主站 `AI_INTERNAL_TOKEN` 保持一致 |
 | `LLM_API_KEY` | 通义 DashScope Key |
 | `RERANK_API_KEY` | 硅基流动 Rerank Key |
-| `DIFY_API_KEY` | **预留项，当前运行时不读取**（配置类忽略多余变量），可留空或删除 |
+| `DIFY_API_KEY` | 预留项（当前版本不读取），可留空 |
 | `MYSQL_DSN` | 主站 MySQL 只读 DSN，供 `scripts/sync_corpus.py` 同步语料 |
 | `EMBED_BASE_URL` / `QDRANT_URL` / `REDIS_URL` | Ollama / Qdrant / Redis 地址，默认值见 `ai_app/config.py` |
 
@@ -237,8 +296,3 @@ python -m pytest tests/ -v
   - 用户头像 `resource/images/headers/user_*.jpg`（默认头图 `1.jpg`~`20.jpg` 入库）
   - `log/*`（保留 `.gitkeep`）
 - 提交前建议检查暂存内容：`git diff --cached --name-only`，确认没有密钥与用户数据。
-- ⚠️ 历史提交 `2d3eea2` 曾含明文 MySQL 密码与邮箱授权码，**请尽快轮换凭据**（改 MySQL `xiaoyu` 密码 + 重置 QQ 邮箱 SMTP 授权码），并同步更新 `.env` 与部署环境。
-
-## 默认账号
-
-本地 / 初始化数据中的测试账号：用户名与密码均为 `123456`（仅供开发测试，正式环境请修改）。
