@@ -58,7 +58,9 @@ resource/upload/*
 resource/images/headers/user_*.jpg
 
 # ==================== AI 子服务本地数据 ====================
-services/ai_service/data/
+# 忽略 data 下所有子项（corpus 导出物等），仅放行 eval 评测用例
+services/ai_service/data/*
+!services/ai_service/data/eval/
 services/ai_service/logs/
 
 # ==================== 编辑器 / 系统文件 ====================
