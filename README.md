@@ -136,6 +136,12 @@ xiaoyunote/
 - **检索感知缓存**：指纹含 `chunk_id`，语料更新自动失效
 - **可观测性**：JSON 结构化日志（trace_id + user_id + elapsed_ms + recall + cache_hit + refused）；`/metrics` 暴露 requests / refusal_rate / cache_hit_rate / p50 / p95 / p99
 
+## 开发方法
+
+- **选型先行**：对 Web 框架、RAG 框架、模型与向量库逐项对比后决策，每个落选项均记录了不选的理由（对比表见 `services/ai_service/docs/02-技术选型确认表.md`）
+- **低代码验证 → 参数冻结 → 工程化**：先在 Dify 搭建 RAG 工作流，验证并冻结分块（800/50）、TopK（15）、阈值（0.2）与系统提示词，再用 FastAPI 自研交付，两者共用同一套模型服务（评测记录见 `services/ai_service/docs/dify/`）
+- **评测驱动**：8 题精确测试集 + 回归评测（`eval-score-v1.md` / `eval-regression.md`），每次参数调整都有分数支撑
+
 ## 核心接口
 
 ### `POST /api/ai/chat/stream`（浏览器唯一入口，经 Flask 网关）

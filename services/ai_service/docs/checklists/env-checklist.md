@@ -22,5 +22,5 @@
 | DeepSeek | https://api.deepseek.com/v1 | deepseek-chat | 待填 | LLM 备选 | 按量 |
 
 ## 实测备注
-- Rerank 对相关文档打分约 0.30（非 0.87），T13 阈值 0.35 需重新校准。
+- Rerank 对相关文档打分约 0.30（非 0.87），阈值 0.35 需重新校准。
 - Ollama 首次调用加载模型约 14s，之后 8-9ms。
